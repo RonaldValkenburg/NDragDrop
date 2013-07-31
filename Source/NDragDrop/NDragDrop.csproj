@@ -47,10 +47,19 @@
   <ItemGroup>
     <Compile Include="DelegateCommand.cs" />
     <Compile Include="Draggable.cs" />
+    <Compile Include="DraggableVisualFeedback.xaml.cs">
+      <DependentUpon>DraggableVisualFeedback.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DragSource.cs" />
     <Compile Include="DropTarget.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SystemMouse.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="DraggableVisualFeedback.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,0 +1,17 @@
+﻿<Window x:Class="NDragDrop.DraggableVisualFeedback"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        AllowsTransparency="True"
+        Background="Transparent"
+        IsHitTestVisible="False"
+        Opacity="0.5"
+        ShowInTaskbar="False"
+        SizeToContent="WidthAndHeight"
+        Topmost="True"
+        WindowStartupLocation="Manual"
+        WindowStyle="None"
+        mc:Ignorable="d">
+    <Image x:Name="TheImage" />
+</Window>
