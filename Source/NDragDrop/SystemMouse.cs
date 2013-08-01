@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) 2013 Ronald Valkenburg
+// This software is licensed under the MIT License (see LICENSE file for details)
+using System;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Drawing;
