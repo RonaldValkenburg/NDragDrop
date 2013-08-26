@@ -1,15 +1,12 @@
 ﻿// Copyright (c) 2013 Ronald Valkenburg
 // This software is licensed under the MIT License (see LICENSE file for details)
-using System.Collections.Generic;
+
 using System.Windows;
 
 namespace NDragDrop
 {
     public class DragSource : DependencyObject
     {
-        // TODO: Add opacitiy attached property
-        private static readonly Dictionary<UIElement, Draggable> Draggables = new Dictionary<UIElement, Draggable>();
-
         public static readonly DependencyProperty ContextProperty =
             DependencyProperty.RegisterAttached("Context", typeof(object), typeof(DragSource), new FrameworkPropertyMetadata(null, ContextChanged));
 
@@ -27,7 +24,9 @@ namespace NDragDrop
         {
             var uiElement = d as UIElement;
             if (uiElement == null) return;
-            Draggables.Add(uiElement, new Draggable(uiElement, e.NewValue));
+// ReSharper disable ObjectCreationAsStatement
+            new Draggable(uiElement, e.NewValue);
+// ReSharper restore ObjectCreationAsStatement
         }
     }
 }

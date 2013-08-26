@@ -13,29 +13,42 @@ namespace NDragDrop
         private readonly object _context;
         private static Point _startPoint;
         private DraggableVisualFeedback _visualFeedback;
-
+        
         public Draggable(UIElement uiElement, object context)
         {
             _uiElement = uiElement;
             _context = context;
             uiElement.PreviewMouseDown += UiElementPreviewMouseDown;
-            uiElement.PreviewMouseMove += UiElementPreviewMouseMove;
+            uiElement.PreviewMouseUp += UiElementOnPreviewMouseUp;
+        }
+
+        ~Draggable()
+        {
+            _uiElement.PreviewMouseDown -= UiElementPreviewMouseDown;
+            _uiElement.PreviewMouseUp -= UiElementOnPreviewMouseUp;
         }
 
         private void UiElementPreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             _startPoint = e.GetPosition(null);
+            _uiElement.PreviewMouseMove += UiElementPreviewMouseMove;
+        }
+
+        private void UiElementOnPreviewMouseUp(object sender, MouseButtonEventArgs mouseButtonEventArgs)
+        {
+            _uiElement.PreviewMouseMove -= UiElementPreviewMouseMove;
         }
 
         private void UiElementPreviewMouseMove(object sender, MouseEventArgs e)
         {
             var mousePosition = e.GetPosition(null);
             var diff = _startPoint - mousePosition;
-
+            
             if (e.LeftButton == MouseButtonState.Pressed &&
                 (Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance ||
                     Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance))
             {
+                _uiElement.PreviewMouseMove -= UiElementPreviewMouseMove;
                 AddVisualFeedback();
                 DragDrop.DoDragDrop(_uiElement, new DataObject("NDragDropFormat", _context), DragDropEffects.Move);
                 RemoveVisualFeedback();
