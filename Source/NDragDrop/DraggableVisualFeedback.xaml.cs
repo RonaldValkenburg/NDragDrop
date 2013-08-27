@@ -32,12 +32,20 @@ namespace NDragDrop
         {
             _grabPosition = Mouse.GetPosition(uiElement);
 
-            var renderTargetBitmap = new RenderTargetBitmap((int)uiElement.RenderSize.Width, (int)uiElement.RenderSize.Height, 96, 96, PixelFormats.Pbgra32);
-            renderTargetBitmap.Render(uiElement);
+            var bounds = VisualTreeHelper.GetDescendantBounds(uiElement);
+            var renderTargetBitmap = new RenderTargetBitmap((int)bounds.Width, (int)bounds.Height, 96, 96, PixelFormats.Pbgra32);
+            
+            var drawingVisual = new DrawingVisual();
+            using (var drawingContext = drawingVisual.RenderOpen())
+            {
+                var visualBrush = new VisualBrush(uiElement);
+                drawingContext.DrawRectangle(visualBrush, null, new Rect(new System.Windows.Point(), bounds.Size));
+            }
+
+            renderTargetBitmap.Render(drawingVisual);
 
             MaxWidth = renderTargetBitmap.PixelWidth;
             MaxHeight = renderTargetBitmap.PixelHeight;
-
             TheImage.Source = renderTargetBitmap;
         }
 
@@ -89,7 +97,7 @@ namespace NDragDrop
 
         private void UpdateLocation(Point location)
         {
-            Left = location.X - _grabPosition.X;
+            Left = location.X -_grabPosition.X;
             Top = location.Y - _grabPosition.Y;
         }
     }
