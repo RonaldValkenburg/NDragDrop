@@ -29,7 +29,12 @@ namespace NDragDrop
         public static readonly DependencyProperty OnDropProperty =
             DependencyProperty.RegisterAttached("OnDrop", typeof (ICommand), typeof (DropTarget), new FrameworkPropertyMetadata(null, OnDropChanged));
 
-        public static void SetOnDrop(UIElement element, ICommand command)
+
+        public static readonly DependencyProperty DropDataTypeProperty =
+            DependencyProperty.RegisterAttached("DropDataType", typeof (string), typeof (DropTarget),
+                new FrameworkPropertyMetadata("NDragDropFormat"));
+        
+       public static void SetOnDrop(UIElement element, ICommand command)
         {
             element.SetValue(OnDropProperty, command);
         }
@@ -37,6 +42,16 @@ namespace NDragDrop
         public static ICommand GetOnDrop(UIElement element)
         {
             return (ICommand)element.GetValue(OnDropProperty);
+        }
+
+        public static string GetDropDataType(UIElement element)
+        {
+            return (string) element.GetValue(DropDataTypeProperty);
+        }
+
+        public static void SetDropDataType(UIElement element, string type)
+        {
+            element.SetValue(DropDataTypeProperty, type);
         }
 
         private static void OnDropChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -55,7 +70,7 @@ namespace NDragDrop
             var command = GetOnDrop(uiElement);
             if (command != null)
             {
-                command.Execute(new DropEventArgs {Context = dragEventArgs.Data.GetData("NDragDropFormat")});
+                command.Execute(new DropEventArgs { Context = dragEventArgs.Data.GetData(GetDropDataType(uiElement)) });
             }
         }
 
