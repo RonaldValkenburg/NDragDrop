@@ -9,6 +9,7 @@ namespace NDragDrop
     public class DropEventArgs : EventArgs
     {
         public object Context { get; set; }
+        public object Paramter { get; set; }
     }
 
     public class DropTarget : DependencyObject
@@ -23,6 +24,19 @@ namespace NDragDrop
         public static ICommand GetOnDrop(UIElement element)
         {
             return (ICommand)element.GetValue(OnDropProperty);
+        }
+
+
+        public static readonly DependencyProperty OnParameterProperty = DependencyProperty.RegisterAttached("Parameter", typeof(object), typeof(DropTarget), new FrameworkPropertyMetadata(null));
+
+        public static void SetParameter(UIElement element, object parameter)
+        {
+            element.SetValue(OnParameterProperty, parameter);
+        }
+
+        public static object GetParameter(UIElement element)
+        {
+            return element.GetValue(OnParameterProperty);
         }
 
         private static void OnDropChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -42,7 +56,11 @@ namespace NDragDrop
             if (uiElement == null) return;
             var command = GetOnDrop(uiElement);
             if (command != null)
-                command.Execute(new DropEventArgs { Context = dragEventArgs.Data.GetData("NDragDropFormat") });
+                command.Execute(new DropEventArgs
+                {
+                    Context = dragEventArgs.Data.GetData("NDragDropFormat"),
+                    Paramter = GetParameter(uiElement)
+                });
         }
 
         private static void UiElementDragOver(object sender, DragEventArgs e)

@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
@@ -30,7 +31,12 @@ namespace NDragDrop.TestApplication
                 {
                     var fruit = args.Context as Fruit;
                     if (fruit == null || Fruits.Contains(fruit)) return;
-                    if (fruit is Apple) Apples.Remove((Apple)fruit);
+                    if (fruit is Apple)
+                    {
+                        var apple = (Apple) fruit;
+                        Apples.Remove(apple);
+                        apple.Name = "Apple";
+                    }
                     if (fruit is Banana) Bananas.Remove((Banana) fruit);
                     Fruits.Add(fruit);
                 });
@@ -46,6 +52,7 @@ namespace NDragDrop.TestApplication
                         var apple = args.Context as Apple;
                         if (apple == null || Apples.Contains(apple)) return;
                         Fruits.Remove(apple);
+                        apple.Name = String.Format("{0}- {1}", "Apple", args.Paramter);
                         Apples.Add(apple);
                     }, x => CanDropApples);
             }
