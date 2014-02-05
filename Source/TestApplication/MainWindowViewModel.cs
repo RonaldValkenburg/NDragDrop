@@ -47,7 +47,7 @@ namespace NDragDrop.TestApplication
                         if (apple == null || Apples.Contains(apple)) return;
                         Fruits.Remove(apple);
                         Apples.Add(apple);
-                    });
+                    }, x => CanDropApples);
             }
         }
 

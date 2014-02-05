@@ -49,9 +49,7 @@
                 Grid.Column="1"
                 BorderBrush="Black"
                 BorderThickness="1">
-            <ListView ItemsSource="{Binding Apples}"
-                      nDragDrop:DropTarget.CanDrop="{Binding CanDropApples}"
-                      nDragDrop:DropTarget.OnDrop="{Binding DropApple}">
+            <ListView ItemsSource="{Binding Apples}" nDragDrop:DropTarget.OnDrop="{Binding DropApple}">
                 <ListView.ItemTemplate>
                     <DataTemplate DataType="testApplication:Apple">
                         <Border Width="60"

@@ -13,21 +13,7 @@ namespace NDragDrop
 
     public class DropTarget : DependencyObject
     {
-        public static readonly DependencyProperty CanDropProperty =
-            DependencyProperty.RegisterAttached("CanDrop", typeof(bool), typeof(DropTarget), new FrameworkPropertyMetadata(true));
-
-        public static void SetCanDrop(UIElement element, bool value)
-        {
-            element.SetValue(CanDropProperty, value);
-        }
-
-        public static bool GetCanDrop(UIElement element)
-        {
-            return (bool)element.GetValue(CanDropProperty);
-        }
-
-        public static readonly DependencyProperty OnDropProperty =
-            DependencyProperty.RegisterAttached("OnDrop", typeof (ICommand), typeof (DropTarget), new FrameworkPropertyMetadata(null, OnDropChanged));
+        public static readonly DependencyProperty OnDropProperty = DependencyProperty.RegisterAttached("OnDrop", typeof(ICommand), typeof(DropTarget), new FrameworkPropertyMetadata(null, OnDropChanged));
 
         public static void SetOnDrop(UIElement element, ICommand command)
         {
@@ -42,7 +28,9 @@ namespace NDragDrop
         private static void OnDropChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var uiElement = d as UIElement;
-            if (uiElement == null) return;
+            if (uiElement == null)
+                return;
+
             uiElement.AllowDrop = true;
             uiElement.DragOver += UiElementDragOver;
             uiElement.Drop += UiElementOnDrop;
@@ -54,20 +42,19 @@ namespace NDragDrop
             if (uiElement == null) return;
             var command = GetOnDrop(uiElement);
             if (command != null)
-            {
-                command.Execute(new DropEventArgs {Context = dragEventArgs.Data.GetData("NDragDropFormat")});
-            }
+                command.Execute(new DropEventArgs { Context = dragEventArgs.Data.GetData("NDragDropFormat") });
         }
 
         private static void UiElementDragOver(object sender, DragEventArgs e)
         {
             var uiElement = sender as UIElement;
-            if (uiElement == null) return;
+            if (uiElement == null) 
+                return;
 
-            if (!GetCanDrop(uiElement))
-            {
+            var command = GetOnDrop(uiElement);
+            if (command != null && !command.CanExecute(null))
                 e.Effects = DragDropEffects.None;
-            }
+
             e.Handled = true;
         }
     }
