@@ -52,7 +52,7 @@ namespace NDragDrop.TestApplication
                         var apple = args.Context as Apple;
                         if (apple == null || Apples.Contains(apple)) return;
                         Fruits.Remove(apple);
-                        apple.Name = String.Format("{0}- {1}", "Apple", args.Paramter);
+                        apple.Name = String.Format("{0}- {1}", "Apple", args.Parameter);
                         Apples.Add(apple);
                     }, x => CanDropApples);
             }

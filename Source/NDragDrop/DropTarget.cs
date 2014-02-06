@@ -9,7 +9,7 @@ namespace NDragDrop
     public class DropEventArgs : EventArgs
     {
         public object Context { get; set; }
-        public object Paramter { get; set; }
+        public object Parameter { get; set; }
     }
 
     public class DropTarget : DependencyObject
@@ -59,7 +59,7 @@ namespace NDragDrop
                 command.Execute(new DropEventArgs
                 {
                     Context = dragEventArgs.Data.GetData("NDragDropFormat"),
-                    Paramter = GetParameter(uiElement)
+                    Parameter = GetParameter(uiElement)
                 });
         }
 
