@@ -16,7 +16,7 @@ namespace NDragDrop
     {
         public static readonly DependencyProperty OnDropProperty =
             DependencyProperty.RegisterAttached("OnDrop", typeof(ICommand), typeof(DropTarget), new FrameworkPropertyMetadata(null, OnDropChanged));
-        
+
         public static void SetOnDrop(UIElement element, ICommand command)
         {
             element.SetValue(OnDropProperty, command);
@@ -39,7 +39,7 @@ namespace NDragDrop
         {
             element.SetValue(DropDataTypeProperty, type);
         }
-        
+
         public static readonly DependencyProperty OnParameterProperty =
             DependencyProperty.RegisterAttached("Parameter", typeof(object), typeof(DropTarget), new FrameworkPropertyMetadata(null));
 
@@ -70,12 +70,9 @@ namespace NDragDrop
 
             var command = GetOnDrop(uiElement);
             if (command == null) return;
-            
-            command.Execute(new DropEventArgs
-            {
-                Context = e.Data.GetData(GetDropDataType(uiElement)),
-                Parameter = GetParameter(uiElement)
-            });
+
+            var dropEventArgs = CreateDropEventArgs(uiElement, e);
+            command.Execute(dropEventArgs);
 
             e.Handled = true;
         }
@@ -86,12 +83,26 @@ namespace NDragDrop
             if (uiElement == null) return;
 
             var command = GetOnDrop(uiElement);
-            if (command != null && !command.CanExecute(null))
+            if (command != null)
             {
-                e.Effects = DragDropEffects.None;
+                var dropEventArgs = CreateDropEventArgs(uiElement, e);
+
+                if (!command.CanExecute(dropEventArgs))
+                {
+                    e.Effects = DragDropEffects.None;
+                }
             }
 
             e.Handled = true;
+        }
+
+        private static DropEventArgs CreateDropEventArgs(UIElement sender, DragEventArgs e)
+        {
+            return new DropEventArgs
+            {
+                Context = e.Data.GetData(GetDropDataType(sender)),
+                Parameter = GetParameter(sender)
+            };
         }
     }
 }
