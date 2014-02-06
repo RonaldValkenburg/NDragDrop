@@ -63,20 +63,21 @@ namespace NDragDrop
             uiElement.Drop += UiElementOnDrop;
         }
 
-        private static void UiElementOnDrop(object sender, DragEventArgs dragEventArgs)
+        private static void UiElementOnDrop(object sender, DragEventArgs e)
         {
             var uiElement = sender as UIElement;
             if (uiElement == null) return;
 
             var command = GetOnDrop(uiElement);
-            if (command != null)
+            if (command == null) return;
+            
+            command.Execute(new DropEventArgs
             {
-                command.Execute(new DropEventArgs
-                {
-                    Context = dragEventArgs.Data.GetData(GetDropDataType(uiElement)),
-                    Parameter = GetParameter(uiElement)
-                });
-            }
+                Context = e.Data.GetData(GetDropDataType(uiElement)),
+                Parameter = GetParameter(uiElement)
+            });
+
+            e.Handled = true;
         }
 
         private static void UiElementDragOver(object sender, DragEventArgs e)
