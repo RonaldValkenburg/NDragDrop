@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>NDragDrop</id>
+        <version>0.2.0</version>
+        <title>NDragDrop</title>
+        <authors>Ronald Valkenburg</authors>
+        <projectUrl>https://github.com/RonaldValkenburg/NDragDrop</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Support for simple drag and drap functionality with visual feedback during drag. Using attached properties to enable drag and drop to your visual elements.</description>
+        <copyright>Copyright (c) 2013 Ronald Valkenburg</copyright>
+        <tags>drag drap dragndrap drag&amp;drop</tags>
+        <frameworkAssemblies>
+            <frameworkAssembly assemblyName="WindowsBase" targetFramework="" />
+            <frameworkAssembly assemblyName="PresentationCore" targetFramework="" />
+            <frameworkAssembly assemblyName="PresentationFramework" targetFramework="" />
+            <frameworkAssembly assemblyName="System.Drawing" targetFramework="" />
+        </frameworkAssemblies>
+    </metadata>
+    <files>
+        <file src="Source\NDragDrop\bin\Release\NDragDrop.dll" target="lib\NDragDrop.dll" />
+    </files>
+</package>
