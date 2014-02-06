@@ -46,7 +46,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DelegateCommand.cs" />
     <Compile Include="Draggable.cs" />
     <Compile Include="DraggableVisualFeedback.xaml.cs">
       <DependentUpon>DraggableVisualFeedback.xaml</DependentUpon>
