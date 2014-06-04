@@ -39,7 +39,7 @@ namespace NDragDrop.TestApplication
                     }
                     if (fruit is Banana) Bananas.Remove((Banana) fruit);
                     Fruits.Add(fruit);
-                });
+                }, CanExecuteDropFruit);
             }
         }
 
@@ -54,7 +54,7 @@ namespace NDragDrop.TestApplication
                         Fruits.Remove(apple);
                         apple.Name = String.Format("{0}- {1}", "Apple", args.Parameter);
                         Apples.Add(apple);
-                    }, x => CanDropApples);
+                    }, CanExecuteDropApples);
             }
         }
 
@@ -68,7 +68,7 @@ namespace NDragDrop.TestApplication
                     if (banana == null || Bananas.Contains(banana)) return;
                     Fruits.Remove(banana);
                     Bananas.Add(banana);
-                });
+                }, CanExecuteDropBanana);
             }
         }
 
@@ -90,6 +90,24 @@ namespace NDragDrop.TestApplication
         {
             PropertyChangedEventHandler handler = PropertyChanged;
             if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private bool CanExecuteDropFruit(object args)
+        {
+            var dropEventArgs = args as DropEventArgs;
+            return dropEventArgs != null && dropEventArgs.Context is Fruit;
+        }
+
+        private bool CanExecuteDropBanana(object args)
+        {
+            var dropEventArgs = args as DropEventArgs;
+            return dropEventArgs != null && dropEventArgs.Context is Banana;
+        }
+
+        private bool CanExecuteDropApples(object args)
+        {
+            var dropEventArgs = args as DropEventArgs;
+            return CanDropApples && dropEventArgs != null && dropEventArgs.Context is Apple;
         }
     }
 }
