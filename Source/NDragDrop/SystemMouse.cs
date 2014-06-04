@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2013 Ronald Valkenburg
+﻿// Copyright (c) 2014 Ronald Valkenburg
 // This software is licensed under the MIT License (see LICENSE file for details)
 using System;
 using System.Runtime.InteropServices;
