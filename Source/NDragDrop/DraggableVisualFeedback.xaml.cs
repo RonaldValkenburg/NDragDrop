@@ -18,7 +18,11 @@ namespace NDragDrop
 
         private readonly ISystemMouse _systemMouse;
         private readonly System.Windows.Point _grabPosition;
-        private Matrix _mousePosTransform = Matrix.Identity;
+        private readonly Rect _bounds;
+        private readonly DrawingVisual _drawingVisual;
+
+        private Matrix _fromScreenTransform = Matrix.Identity;
+        private Matrix _toScreenTransform = Matrix.Identity;
 
         public DraggableVisualFeedback()
         {
@@ -32,22 +36,13 @@ namespace NDragDrop
             : this()
         {
             _grabPosition = Mouse.GetPosition(uiElement);
-
-            var bounds = VisualTreeHelper.GetDescendantBounds(uiElement);
-            var renderTargetBitmap = new RenderTargetBitmap((int)bounds.Width, (int)bounds.Height, 96, 96, PixelFormats.Pbgra32);
-
-            var drawingVisual = new DrawingVisual();
-            using (var drawingContext = drawingVisual.RenderOpen())
+            _bounds = VisualTreeHelper.GetDescendantBounds(uiElement);
+            _drawingVisual = new DrawingVisual();
+            using (var drawingContext = _drawingVisual.RenderOpen())
             {
                 var visualBrush = new VisualBrush(uiElement);
-                drawingContext.DrawRectangle(visualBrush, null, new Rect(new System.Windows.Point(), bounds.Size));
+                drawingContext.DrawRectangle(visualBrush, null, new Rect(new System.Windows.Point(), _bounds.Size));
             }
-
-            renderTargetBitmap.Render(drawingVisual);
-
-            MaxWidth = renderTargetBitmap.PixelWidth;
-            MaxHeight = renderTargetBitmap.PixelHeight;
-            TheImage.Source = renderTargetBitmap;
         }
 
         [DllImport("Kernel32")]
@@ -77,8 +72,8 @@ namespace NDragDrop
 
         private void OnSourceInitialized(object sender, EventArgs eventArgs)
         {
-            PresentationSource source = PresentationSource.FromVisual(this);
-            _mousePosTransform = source?.CompositionTarget?.TransformFromDevice ?? Matrix.Identity;
+            InitDeviceTransforms();
+            RenderBitmap();
 
             var hWnd = new WindowInteropHelper(this).Handle;
 
@@ -94,6 +89,31 @@ namespace NDragDrop
             SetWindowLong(hWnd, GwlExstyle, windowLongPtr);
         }
 
+        private void InitDeviceTransforms()
+        {
+            PresentationSource source = PresentationSource.FromVisual(this);
+            if (source == null) return;
+            if (source.CompositionTarget == null) return;
+
+            _fromScreenTransform = source.CompositionTarget.TransformFromDevice;
+            _toScreenTransform = source.CompositionTarget.TransformToDevice;
+        }
+
+        private void RenderBitmap()
+        {
+            var resolution = new Vector(96.0, 96.0) * _toScreenTransform;
+            var pixelSize = new Vector(_bounds.Width, _bounds.Height) * _toScreenTransform;
+
+            var renderTargetBitmap = new RenderTargetBitmap(
+                (int)pixelSize.X, (int)pixelSize.Y,
+                resolution.X, resolution.Y, PixelFormats.Pbgra32);
+            renderTargetBitmap.Render(_drawingVisual);
+
+            MaxWidth = _bounds.Width;
+            MaxHeight = _bounds.Height;
+            TheImage.Source = renderTargetBitmap;
+        }
+
         private void MousePositionChanged(object sender, MousePositionChangedEventArgs eventargs)
         {
             Dispatcher.BeginInvoke(new Action<Point>(UpdateLocation), eventargs.Position);
@@ -102,7 +122,7 @@ namespace NDragDrop
         private void UpdateLocation(Point location)
         {
             Vector locationVec = new Vector(location.X, location.Y);
-            Vector transformedLocation = Vector.Multiply(locationVec, _mousePosTransform);
+            Vector transformedLocation = locationVec * _fromScreenTransform;
 
             Left = transformedLocation.X - _grabPosition.X;
             Top = transformedLocation.Y - _grabPosition.Y;
