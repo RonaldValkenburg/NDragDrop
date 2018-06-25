@@ -11,13 +11,14 @@ using Point = System.Drawing.Point;
 
 namespace NDragDrop
 {
-    public partial class DraggableVisualFeedback
+    public partial class DraggableVisualFeedback : Window
     {
         private const int GwlExstyle = -20;
         private const int WsExTransparent = 0x00000020;
 
         private readonly ISystemMouse _systemMouse;
         private readonly System.Windows.Point _grabPosition;
+        private Matrix _mousePosTransform = Matrix.Identity;
 
         public DraggableVisualFeedback()
         {
@@ -34,7 +35,7 @@ namespace NDragDrop
 
             var bounds = VisualTreeHelper.GetDescendantBounds(uiElement);
             var renderTargetBitmap = new RenderTargetBitmap((int)bounds.Width, (int)bounds.Height, 96, 96, PixelFormats.Pbgra32);
-            
+
             var drawingVisual = new DrawingVisual();
             using (var drawingContext = drawingVisual.RenderOpen())
             {
@@ -76,14 +77,17 @@ namespace NDragDrop
 
         private void OnSourceInitialized(object sender, EventArgs eventArgs)
         {
+            PresentationSource source = PresentationSource.FromVisual(this);
+            _mousePosTransform = source?.CompositionTarget?.TransformFromDevice ?? Matrix.Identity;
+
             var hWnd = new WindowInteropHelper(this).Handle;
 
             var windowLongPtr = GetWindowLong(hWnd, GwlExstyle);
             if (windowLongPtr == IntPtr.Zero) return;
 
             windowLongPtr = (IntPtr.Size == 4)
-                                ? (IntPtr) (windowLongPtr.ToInt32() | WsExTransparent)
-                                : (IntPtr) (windowLongPtr.ToInt64() | WsExTransparent);
+                                ? (IntPtr)(windowLongPtr.ToInt32() | WsExTransparent)
+                                : (IntPtr)(windowLongPtr.ToInt64() | WsExTransparent);
 
             SetLastError(0);
 
@@ -97,8 +101,11 @@ namespace NDragDrop
 
         private void UpdateLocation(Point location)
         {
-            Left = location.X -_grabPosition.X;
-            Top = location.Y - _grabPosition.Y;
+            Vector locationVec = new Vector(location.X, location.Y);
+            Vector transformedLocation = Vector.Multiply(locationVec, _mousePosTransform);
+
+            Left = transformedLocation.X - _grabPosition.X;
+            Top = transformedLocation.Y - _grabPosition.Y;
         }
     }
 }
